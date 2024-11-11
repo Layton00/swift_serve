@@ -1,0 +1,35 @@
+[Steaks]
+11oz Sirloin:Rare,Medium,Well:11oz:20.99
+12oz Ribeye:Rare,Medium,Well:12oz:24.99
+8oz Filet:Rare,Medium,Well:8oz:22.99
+8oz Strip:Rare,Medium,Well:8oz:21.99
+16oz Prime:Rare,Medium,Well:16oz:29.99
+
+[Chicken]
+Grilled Chicken:::15.99
+BBQ Chicken:::16.99
+
+[Seafood]
+Grilled Salmon:::18.99
+Shrimp Scampi:::19.99
+Fried Cod:::17.99
+
+[Burgers]
+Cheeseburger:Cheese,Lettuce,Tomato,Onion,Bacon::14.99
+Bacon Burger:Cheese,Lettuce,Tomato,Onion,Bacon::15.99
+Veggie Burger:Lettuce,Tomato,Onion:With Salad:12.99
+
+[Sandwiches]
+Club Sandwich:Bacon,Lettuce,Tomato,Mayo::12.99
+BLT Sandwich:Bacon,Lettuce,Tomato,Mayo::11.99
+Turkey Sandwich:Lettuce,Tomato,Mayo::13.99
+
+[Sides]
+French Fries:::2.99
+Mashed Potatoes:::3.49
+Steamed Vegetables:::3.99
+
+[Drinks]
+Soda:::1.99
+Iced Tea:::2.49
+Water:::0.99
