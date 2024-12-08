@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
 import 'main.dart';
+import 'thankyouscreen.dart'; // Import the new screen
 
 class OrderScreen extends StatefulWidget {
   final List<Map<String, dynamic>> order;
@@ -94,10 +95,8 @@ class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin
   }
 
   void _resetOrder(BuildContext context) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MenuScreen()),
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const ThankYouScreen()),
     );
   }
 
@@ -106,19 +105,6 @@ class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin
     double subtotal = widget.order.fold(0.0, (sum, item) => sum + double.parse(item['price']));
     double tax = subtotal * 0.10;
     double total = subtotal + tax;
-
-    // Generate a random 7-digit order number
-    final random = Random();
-    final orderNumber = random.nextInt(9000000) + 1000000;
-
-    // Get the current date and time
-    final now = DateTime.now();
-    final formattedDate = '${now.month}/${now.day}/${now.year}';
-    final formattedTime = _formatTime(now);
-
-    // Calculate the estimated time of finish
-    final estimatedFinishTime = now.add(const Duration(minutes: 25));
-    final formattedFinishTime = _formatTime(estimatedFinishTime);
 
     return Scaffold(
       appBar: AppBar(
@@ -205,10 +191,10 @@ class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin
               ],
             ),
             const SizedBox(height: 10),
-            Text('Order Number: $orderNumber'),
-            Text('Date: $formattedDate'),
-            Text('Time: $formattedTime'),
-            Text('Estimated Finish Time: $formattedFinishTime'),
+            Text('Order Number: ${Random().nextInt(9000000) + 1000000}'),
+            Text('Date: ${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year}'),
+            Text('Time: ${DateTime.now().hour}:${DateTime.now().minute}'),
+            Text('Estimated Finish Time: ${DateTime.now().add(const Duration(minutes: 25)).hour}:${DateTime.now().add(const Duration(minutes: 25)).minute}'),
             const Divider(thickness: 1, color: Colors.black),
             const SizedBox(height: 10),
             ...widget.order.map((item) => Text('${item['name']} (\$${item['price']})')).toList(),
@@ -243,12 +229,5 @@ class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime time) {
-    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.hour >= 12 ? 'PM' : 'AM';
-    return '$hour:$minute $period';
   }
 }
