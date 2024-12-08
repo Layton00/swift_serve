@@ -1,0 +1,8 @@
+[Sides]
+Chocolate Cake:::4.99
+Cheesecake:::5.49
+Apple Pie:::3.99
+Ice Cream Sundae:::4.49
+Brownie Sundae:::4.99
+Tiramisu:::5.99
+Fruit Salad:::3.49

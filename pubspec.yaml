@@ -61,7 +61,12 @@ flutter:
 
   assets:
     - assets/entrees_data.txt
-  
+    - assets/sides.txt
+    - assets/salads.txt
+    - assets/drinks.txt
+    - assets/desserts.txt
+    - assets/tableinfo.txt
+    
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

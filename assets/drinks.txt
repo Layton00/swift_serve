@@ -1,0 +1,7 @@
+[Sides]
+Coca Cola:::1.99
+Pepsi:::1.99
+Lemonade:::2.49
+Iced Tea:::2.49
+Orange Juice:::2.99
+Water:::0.99

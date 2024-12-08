@@ -18,7 +18,6 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
   late List<String> selectedBurgerIngredients;
   late String selectedSide;
   late String selectedDrink;
-
   Map<String, dynamic> entreeOptions = {};
   String category = "";
   String errorMessage = "";
@@ -30,7 +29,6 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     selectedBurgerIngredients = [];
     selectedSide = "";
     selectedDrink = "";
-
     _loadData();
   }
 
@@ -39,11 +37,9 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
       // Load the entrees_data.txt file from assets
       final String data = await rootBundle.loadString('assets/entrees_data.txt');
       final lines = LineSplitter().convert(data);
-
       // Parse the data and determine category
       Map<String, dynamic> options = _parseEntreeData(lines);
       String detectedCategory = _getCategory(widget.entreeName, options);
-
       setState(() {
         entreeOptions = options;
         category = detectedCategory;
@@ -67,60 +63,55 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     return '';
   }
 
-Map<String, dynamic> _parseEntreeData(List<String> lines) {
-  Map<String, dynamic> options = {
-    'steaks': [],
-    'burgerIngredients': [],
-    'sandwiches': [],
-    'sides': [],
-    'drinks': [],
-    'steakCook': []
-  };
-
-  String currentCategory = "";
-  for (String line in lines) {
-    if (line.startsWith('[') && line.endsWith(']')) {
-      currentCategory = line.substring(1, line.length - 1).toLowerCase();
-    } else if (line.trim().isNotEmpty) {
-      final parts = line.split(':');
-
-      // Ensure the category's list is initialized
-      if (options[currentCategory] == null) {
-        options[currentCategory] = [];
-      }
-
-      switch (currentCategory) {
-        case 'steaks':
-          (options['steaks'] as List).add(parts[0]); // Add the steak name
-          options['steakCook'] = parts[1].split(',').map((s) => s.trim()).toList();
-          break;
-        case 'burgers':
-          (options['burgers'] as List).add(parts[0]); // Add the burger name
-          options['burgerIngredients'] = parts[1].split(',').map((s) => s.trim()).toList();
-          break;
-        case 'sandwiches':
-          (options['sandwiches'] as List).add(parts[0]); // Add the sandwich name
-          // Add sandwich ingredients if present
-          if (parts.length > 1 && parts[1].isNotEmpty) {
-            options['burgerIngredients'] = [
-              ...options['burgerIngredients'],
-              ...parts[1].split(',').map((s) => s.trim())
-            ].toSet().toList(); // Remove duplicates
-          }
-          break;
-        case 'sides':
-          (options['sides'] as List).add(parts[0]); // Add the side
-          break;
-        case 'drinks':
-          (options['drinks'] as List).add(parts[0]); // Add the drink
-          break;
+  Map<String, dynamic> _parseEntreeData(List<String> lines) {
+    Map<String, dynamic> options = {
+      'steaks': [],
+      'burgerIngredients': [],
+      'sandwiches': [],
+      'sides': [],
+      'drinks': [],
+      'steakCook': []
+    };
+    String currentCategory = "";
+    for (String line in lines) {
+      if (line.startsWith('[') && line.endsWith(']')) {
+        currentCategory = line.substring(1, line.length - 1).toLowerCase();
+      } else if (line.trim().isNotEmpty) {
+        final parts = line.split(':');
+        // Ensure the category's list is initialized
+        if (options[currentCategory] == null) {
+          options[currentCategory] = [];
+        }
+        switch (currentCategory) {
+          case 'steaks':
+            (options['steaks'] as List).add(parts[0]); // Add the steak name
+            options['steakCook'] = parts[1].split(',').map((s) => s.trim()).toList();
+            break;
+          case 'burgers':
+            (options['burgers'] as List).add(parts[0]); // Add the burger name
+            options['burgerIngredients'] = parts[1].split(',').map((s) => s.trim()).toList();
+            break;
+          case 'sandwiches':
+            (options['sandwiches'] as List).add(parts[0]); // Add the sandwich name
+            // Add sandwich ingredients if present
+            if (parts.length > 1 && parts[1].isNotEmpty) {
+              options['burgerIngredients'] = [
+                ...options['burgerIngredients'],
+                ...parts[1].split(',').map((s) => s.trim())
+              ].toSet().toList(); // Remove duplicates
+            }
+            break;
+          case 'sides':
+            (options['sides'] as List).add(parts[0]); // Add the side
+            break;
+          case 'drinks':
+            (options['drinks'] as List).add(parts[0]); // Add the drink
+            break;
+        }
       }
     }
+    return options;
   }
-  return options;
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +125,6 @@ Map<String, dynamic> _parseEntreeData(List<String> lines) {
         ),
       );
     }
-
     if (entreeOptions.isEmpty) {
       return Scaffold(
         appBar: AppBar(
@@ -145,7 +135,6 @@ Map<String, dynamic> _parseEntreeData(List<String> lines) {
         ),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Customize ${widget.entreeName} - \$${widget.price}'),
@@ -239,10 +228,9 @@ Map<String, dynamic> _parseEntreeData(List<String> lines) {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, {
-                      'steakCook': steakCook,
-                      'selectedBurgerIngredients': selectedBurgerIngredients,
-                      'selectedSide': selectedSide,
-                      'selectedDrink': selectedDrink,
+                      'entree': {'name': widget.entreeName, 'price': widget.price},
+                      'side': {'name': selectedSide, 'price': '0.00'}, // Replace with actual price if available
+                      'drink': {'name': selectedDrink, 'price': '0.00'}, // Replace with actual price if available
                     });
                   },
                   child: Text('Confirm'),

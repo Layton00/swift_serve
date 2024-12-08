@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart' show rootBundle;
-import 'customization_screen.dart'; // Import the new customization screen file
+import 'customization_screen.dart'; // Import the customization screen
 
 class EntreesScreen extends StatefulWidget {
   const EntreesScreen({super.key});
@@ -16,7 +16,6 @@ class _EntreesScreenState extends State<EntreesScreen> {
   final Map<String, List<Map<String, dynamic>>> entrees = {};
   final List<String> sides = [];
   final List<String> drinks = [];
-
   String selectedCategory = '';
   String? selectedEntree; // Only one entree can be selected
   String? selectedPrice; // Store price of selected entree
@@ -31,10 +30,8 @@ class _EntreesScreenState extends State<EntreesScreen> {
     try {
       // Load the text file
       final String data = await rootBundle.loadString('assets/entrees_data.txt');
-
       // Parse the data
       Map<String, dynamic> parsedData = _parseData(data);
-
       setState(() {
         categories.addAll(parsedData['categories'].cast<String>());
         entrees.addAll(parsedData['entrees']);
@@ -54,13 +51,10 @@ class _EntreesScreenState extends State<EntreesScreen> {
       'sides': <String>[],
       'drinks': <String>[],
     };
-
     List<String> lines = LineSplitter.split(data).toList();
     String currentCategory = '';
-
     for (String line in lines) {
       line = line.trim();
-
       if (line.startsWith('[') && line.endsWith(']')) {
         // New category
         currentCategory = line.substring(1, line.length - 1);
@@ -86,14 +80,12 @@ class _EntreesScreenState extends State<EntreesScreen> {
           String price = (parts.length > 3 && parts[3].isNotEmpty)
               ? parts[3].trim()
               : '0.00';
-
           // Ensure price is formatted correctly
           try {
             price = double.parse(price).toStringAsFixed(2);
           } catch (e) {
             price = '0.00';
           }
-
           if (name.isNotEmpty) {
             result['entrees'][currentCategory].add({
               'name': name,
@@ -105,7 +97,6 @@ class _EntreesScreenState extends State<EntreesScreen> {
         }
       }
     }
-
     return result;
   }
 
@@ -116,7 +107,6 @@ class _EntreesScreenState extends State<EntreesScreen> {
       );
       return;
     }
-
     // Navigate to the customization screen
     final result = await Navigator.push(
       context,
@@ -127,13 +117,9 @@ class _EntreesScreenState extends State<EntreesScreen> {
         ),
       ),
     );
-
     // Handle customizations returned from the customization screen
     if (result != null) {
-      print('Customizations: $result');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Customization saved: $result')),
-      );
+      Navigator.pop(context, result); // Return the result to the main screen
     }
   }
 
@@ -158,7 +144,6 @@ class _EntreesScreenState extends State<EntreesScreen> {
                     itemBuilder: (context, index) {
                       final category = categories[index];
                       final isSelected = category == selectedCategory;
-
                       return ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -178,88 +163,65 @@ class _EntreesScreenState extends State<EntreesScreen> {
                     },
                   ),
                 ),
-
                 // Entrees list
                 Expanded(
                   child: entrees.isEmpty
                       ? const Center(child: CircularProgressIndicator())
-                      : Column(
-                          children: [
-                            // Search bar
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  labelText: 'Search',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                      : ListView.builder(
+                          itemCount: entrees[selectedCategory]?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            final entree = entrees[selectedCategory]![index];
+                            final isSelected = selectedEntree == entree['name'];
+                            return ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    selectedEntree = null; // Deselect
+                                    selectedPrice = null;
+                                  } else {
+                                    selectedEntree = entree['name']; // Select
+                                    selectedPrice = entree['price'];
+                                  }
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    isSelected ? Colors.lightGreen : Colors.grey[200],
+                                foregroundColor: isSelected ? Colors.white : Colors.black,
+                                padding: const EdgeInsets.all(15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                            ),
-
-                            // Entree items
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: entrees[selectedCategory]?.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  final entree = entrees[selectedCategory]![index];
-                                  final isSelected = selectedEntree == entree['name'];
-
-                                  return ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        if (isSelected) {
-                                          selectedEntree = null; // Deselect
-                                          selectedPrice = null;
-                                        } else {
-                                          selectedEntree = entree['name']; // Select
-                                          selectedPrice = entree['price'];
-                                        }
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          isSelected ? Colors.lightGreen : Colors.grey[200],
-                                      foregroundColor: isSelected ? Colors.white : Colors.black,
-                                      padding: const EdgeInsets.all(15),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${entree['name']} (${entree['size']})',
+                                        style: const TextStyle(fontSize: 16),
                                       ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${entree['name']} (${entree['size']})',
-                                              style: const TextStyle(fontSize: 16),
-                                            ),
-                                            Text(
-                                              '\$${entree['price']}',
-                                              style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                            ),
-                                          ],
-                                        ),
-                                        Icon(
-                                          isSelected ? Icons.check : Icons.help_outline,
-                                          color: isSelected ? Colors.white : Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                      Text(
+                                        '\$${entree['price']}',
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                  Icon(
+                                    isSelected ? Icons.check : Icons.help_outline,
+                                    color: isSelected ? Colors.white : Colors.black,
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                 ),
               ],
             ),
           ),
-
           // Confirm button
           Padding(
             padding: const EdgeInsets.all(8.0),

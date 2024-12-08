@@ -30,6 +30,8 @@ Mashed Potatoes:::3.49
 Steamed Vegetables:::3.99
 
 [Drinks]
-Soda:::1.99
+Pepsi:::1.99
+Coke:::1.99
+Sprite:::1.99
 Iced Tea:::2.49
 Water:::0.99

@@ -1,0 +1,5 @@
+[Sides]
+Caesar Salad:::5.99
+Garden Salad:::4.99
+Greek Salad:::6.49
+Cobb Salad:::7.49
