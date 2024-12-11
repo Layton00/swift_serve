@@ -9,7 +9,7 @@ import 'desserts.dart';
 import 'orderscreen.dart';
 import 'tables.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter/services.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -128,6 +128,10 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void confirmOrder(BuildContext context) {
+    if(currentOrder.isEmpty){
+      _showSnackBar(context, 'Please add items to your order');
+      return;
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
