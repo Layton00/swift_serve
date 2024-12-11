@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
 import 'main.dart';
-import 'thankyouscreen.dart'; // Import the new screen
-
+import 'thankyouscreen.dart';
+import 'package:intl/intl.dart';
 class OrderScreen extends StatefulWidget {
   final List<Map<String, dynamic>> order;
 
@@ -14,6 +14,7 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin {
+  int ordernumber = Random().nextInt(9000000) + 1000000;
   late AnimationController _controller1;
   late AnimationController _controller2;
   late AnimationController _controller3;
@@ -191,10 +192,9 @@ class _OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin
               ],
             ),
             const SizedBox(height: 10),
-            Text('Order Number: ${Random().nextInt(9000000) + 1000000}'),
-            Text('Date: ${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year}'),
-            Text('Time: ${DateTime.now().hour}:${DateTime.now().minute}'),
-            Text('Estimated Finish Time: ${DateTime.now().add(const Duration(minutes: 25)).hour}:${DateTime.now().add(const Duration(minutes: 25)).minute}'),
+            Text('Order Number: ' + ordernumber.toString()),
+            Text('Time: ${DateFormat('HH:mm').format(DateTime.now())}'),
+            Text('Estimated Finish Time: ${DateFormat('HH:mm').format(DateTime.now().add(const Duration(minutes: 25)))}'),
             const Divider(thickness: 1, color: Colors.black),
             const SizedBox(height: 10),
             ...widget.order.map((item) => Text('${item['name']} (\$${item['price']})')).toList(),

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'dart:io';
 
 class TablesScreen extends StatefulWidget {
-  const TablesScreen({super.key});
+  final Map<int, List<String>> tableRequests;
+
+  const TablesScreen({super.key, required this.tableRequests});
 
   @override
   _TablesScreenState createState() => _TablesScreenState();
@@ -12,13 +14,11 @@ class TablesScreen extends StatefulWidget {
 class _TablesScreenState extends State<TablesScreen> {
   String? selectedTable;
   Map<String, List<String>> tableOrders = {};
-  Map<String, List<String>> tableRequests = {};
 
   @override
   void initState() {
     super.initState();
     _loadTableInfo();
-    _loadTableRequests();
   }
 
   Future<void> _loadTableInfo() async {
@@ -38,29 +38,6 @@ class _TablesScreenState extends State<TablesScreen> {
 
     setState(() {
       tableOrders = orders;
-    });
-  }
-
-  Future<void> _loadTableRequests() async {
-    final file = File('assets/tableinfo.txt');
-    List<String> lines = await file.readAsLines();
-    Map<String, List<String>> requests = {};
-
-    for (String line in lines) {
-      if (line.startsWith('[') && line.contains(']')) {
-        String tableName = line.substring(1, line.indexOf(']'));
-        int colonIndex = line.indexOf(':');
-        if (colonIndex != -1) {
-          String requestInfo = line.substring(colonIndex + 1).trim();
-          requests[tableName] = requestInfo.isNotEmpty
-              ? requestInfo.split(',').map((item) => item.trim()).toList()
-              : [];
-        }
-      }
-    }
-
-    setState(() {
-      tableRequests = requests;
     });
   }
 
@@ -88,7 +65,6 @@ class _TablesScreenState extends State<TablesScreen> {
 
     setState(() {
       tableOrders[selectedTable!] = [];
-      tableRequests[selectedTable!] = [];
     });
   }
 
@@ -200,7 +176,7 @@ class _TablesScreenState extends State<TablesScreen> {
                                   color: Colors.white,
                                   child: ListView(
                                     children: [
-                                      ...?tableRequests[selectedTable]?.map((item) => Text(
+                                      ...?widget.tableRequests[int.parse(selectedTable!.split(' ').last)]?.map((item) => Text(
                                             item,
                                             style: const TextStyle(fontSize: 16, color: Colors.black),
                                           )),

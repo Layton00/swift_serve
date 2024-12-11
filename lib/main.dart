@@ -8,6 +8,7 @@ import 'drinks.dart';
 import 'desserts.dart';
 import 'orderscreen.dart';
 import 'tables.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -171,31 +172,16 @@ class _MenuScreenState extends State<MenuScreen> {
     await file.writeAsString(lines.join('\n'));
   }
 
-  void addRequestToTable(String request) async {
-  final file = File('assets/tableinfo.txt');
-  List<String> lines = await file.readAsLines();
-  String tableHeader = '[Table $selectedTableNumber]';
-  bool tableFound = false;
+  Map<int, List<String>> tableRequests = {};
 
-  for (int i = 0; i < lines.length; i++) {
-    if (tableFound) {
-      int colonIndex = lines[i].indexOf(':');
-      if (colonIndex != -1) {
-        String existingRequests = lines[i].substring(colonIndex + 1).trim();
-        if (existingRequests.isEmpty) {
-          lines[i] = '${lines[i].substring(0, colonIndex + 1)} $request, ';
-        } else {
-          lines[i] = '${lines[i]} $request, ';
-        }
-        break;
-      }
-    } else if (lines[i].startsWith(tableHeader)) {
-      tableFound = true;
+  void addRequestToTable(String request) {
+    if (!tableRequests.containsKey(selectedTableNumber)) {
+      tableRequests[selectedTableNumber] = [];
     }
+    String currentTime = DateFormat('HH:mm').format(DateTime.now());
+    tableRequests[selectedTableNumber]!.add('$request: $currentTime');
+    _showSnackBar(context, 'Request added: $request at $currentTime');
   }
-
-  await file.writeAsString(lines.join('\n'));
-}
 
   void setTableNumber(BuildContext context) {
     showDialog(
@@ -224,13 +210,14 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      duration: Duration(seconds: 1),
-    ),
-  );
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double subtotal = calculateSubtotal();
@@ -256,7 +243,9 @@ class _MenuScreenState extends State<MenuScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TablesScreen()),
+                MaterialPageRoute(
+                  builder: (context) => TablesScreen(tableRequests: tableRequests),
+                ),
               );
             },
           ),
@@ -283,17 +272,22 @@ class _MenuScreenState extends State<MenuScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-                ...currentOrder.map((item) => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${item['name']} (\$${item['price']})'),
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle),
-                      onPressed: () => removeItem(item['id']),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: currentOrder.map((item) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${item['name']} (\$${item['price']})'),
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle),
+                            onPressed: () => removeItem(item['id']),
+                          ),
+                        ],
+                      )).toList(),
                     ),
-                  ],
-                )).toList(),
-                const Spacer(),
+                  ),
+                ),
                 Container(
                   color: Colors.amber[100],
                   padding: const EdgeInsets.all(8.0),
@@ -379,7 +373,6 @@ class _MenuScreenState extends State<MenuScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      
                       PopupMenuButton<String>(
                         icon: const Icon(Icons.notifications),
                         onSelected: (String result) {
